@@ -4,4 +4,6 @@ const lawyerDataSchema = new mongoose.Schema({
     
 });
 
-module.exports = mongoose.model('LawyerData', lawyerDataSchema);
+const lawyerData = mongoose.model('LawyerData', lawyerDataSchema);
+
+export default lawyerData;

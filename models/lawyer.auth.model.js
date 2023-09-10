@@ -47,4 +47,6 @@ const lawyerAuthSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('LawyerAuth', lawyerAuthSchema);
+const lawyerAuth = mongoose.model('LawyerAuth', lawyerAuthSchema);
+
+export default lawyerAuth;
