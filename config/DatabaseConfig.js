@@ -2,14 +2,10 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
 
-main().catch((err) => console.log(err));
-async function main() {
+export async function connectToDatabase(){
   const url = process.env.URL;
-  const dbPath = "/legalbuddy";
-  await mongoose.connect(url + dbPath, {
+  await mongoose.connect(url, {
     useNewUrlParser: true,
   });
-  console.log('Conneted To Mongodb Databse');
+  console.log('Connected To MongoDB Database');
 }
-
-export default main;
