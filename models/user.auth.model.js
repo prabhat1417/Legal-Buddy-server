@@ -9,6 +9,10 @@ const userAuthSchema=new mongoose.Schema({
         type:String,
         require:true,
     },
+    PASSWORD:{
+        type:String,
+        require:true
+    },
     PHONE_NUMBER:{
         type:Number,
         require:true,
@@ -19,7 +23,7 @@ const userAuthSchema=new mongoose.Schema({
         require:true,
         
     },
-    My_Orders:{
+    MYORDERS:{
        type:[String]
 
     }
