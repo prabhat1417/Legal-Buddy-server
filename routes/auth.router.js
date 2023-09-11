@@ -1,10 +1,12 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import UserAuth from "../models/user.auth.model.js";
-const userRouter = express.Router();
+import loggers from "../config/loggersConfig.js";
+import lawyerAuth from "../models/lawyer.auth.model.js";
+const authRouter = express.Router();
 
 // Route for user login
-userRouter.post("/userlogin", async (req, res) => {
+authRouter.post("/userLogin", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -45,7 +47,7 @@ userRouter.post("/userlogin", async (req, res) => {
 });
 
 // Route for user registration/sign-up
-userRouter.post("/usersignin", async (req, res) => {
+authRouter.post("/userSignup", async (req, res) => {
     const { first_name, last_name, password, phone_number, email } = req.body;
       console.log(req.body);
     try {
@@ -86,4 +88,156 @@ userRouter.post("/usersignin", async (req, res) => {
     }
 });
 
-export default userRouter;
+// Route for Lawyer Registratin/Signup
+authRouter.post("/lawyerSignup", async (req, res) => {
+    const {
+        FIRSTNAME,
+        LASTNAME,
+        PASSWORD,
+        MOBILENUMBER,
+        EMAIL,
+        GENDER,
+        STATE,
+        CITY,
+        BAR_COUNCIL_ID,
+        ID_NUMBER,
+        YEAR
+    } = req.body;
+
+    try {
+        if (
+            !FIRSTNAME ||
+            !LASTNAME ||
+            !PASSWORD ||
+            !MOBILENUMBER ||
+            !EMAIL ||
+            !GENDER ||
+            !STATE ||
+            !CITY ||
+            !BAR_COUNCIL_ID ||
+            !ID_NUMBER ||
+            !YEAR
+        ) {
+            loggers.error('Lawyer signup failed: Missing required fields', { body: req.body });
+            return res.status(400).json({
+                status: "failed",
+                message: "All fields are required"
+            });
+        }
+
+        if (MOBILENUMBER.length !== 10 || !/^\d+$/.test(MOBILENUMBER)) {
+            loggers.error('User signup failed: Invalid phone number format', { mobileNumber: MOBILENUMBER });
+            return res.status(400).json({
+                status: "failed",
+                message: "Invalid phone number format. It should be exactly 10 digits."
+            });
+        }
+
+        const checkEmail = await lawyerAuth.findOne({ EMAIL });
+
+        if (checkEmail) {
+            loggers.info('Lawyer signup failed: Account already registered', { email: EMAIL });
+            return res.status(400).json({
+                status: "failed",
+                message: "Account already registered. Please log in."
+            });
+        }        
+
+        const hashedPassword = await bcrypt.hash(PASSWORD, 10);
+
+        const newLawyer = new lawyerAuth({
+            FIRSTNAME,
+            LASTNAME,
+            PASSWORD: hashedPassword,
+            MOBILENUMBER,
+            EMAIL,
+            GENDER,
+            STATE,
+            CITY,
+            BAR_COUNCIL_ID,
+            ID_NUMBER,
+            YEAR
+        });
+
+        await newLawyer.save();
+        loggers.info('Lawyer signed up successfully', { email: EMAIL });
+        res.status(201).json({
+            status: "success",
+            message: "Lawyer registration successful",
+            data: {
+                email: EMAIL
+            }
+        });
+        
+
+    } catch (error) {
+        loggers.error('Lawyer signup error', { error });
+        console.error(error);
+        res.status(500).json({
+            status: "error",
+            message: "An error occurred while processing the request"
+        });
+    }
+});
+
+// Route for lawyer login
+authRouter.post("/lawyerLogin", async (req, res) => {
+
+    const {
+        EMAIL,
+        PASSWORD
+    } = req.body;
+
+    try {
+        if(
+            !EMAIL ||
+            !PASSWORD
+        ) {
+            loggers.error('Lawyer login failed: Missing required fields', { body: req.body });
+            return res.status(400).json({
+                status: "failed",
+                message: "EMail or Password cannot be empty"
+            });
+        }
+
+        const foundLawyer = await lawyerAuth.findOne({ EMAIL });
+
+        if (!foundLawyer) {
+            loggers.error('Lawyer is not registered: ', { body: req.body });
+            return res.status(400).json({
+                status: "failed",
+                message: `${EMAIL} does bot exist. Please signup first`
+            });
+        }
+
+        // decrypting and then comapring 
+        const isPasswordValid = await bcrypt.compare(PASSWORD, foundLawyer.PASSWORD);
+
+        if (!isPasswordValid) {
+            loggers.error('Invalid password for lawyer', { email: EMAIL });
+            return res.status(400).json({
+                status: "failed",
+                message: "Invalid username or password"
+            });
+        }
+
+        // for future to add token
+        // const token = generateToken(foundLawyer);
+
+        res.json({
+            status: "success",
+            message: "Authentication successful",
+        });
+
+    } catch (error) {
+        loggers.error('Lawyer login error', { error });
+        console.error(error);
+        res.status(500).json({
+            status: "error",
+            message: "An error occurred while processing the request"
+        });
+    }
+
+})
+
+export default authRouter;

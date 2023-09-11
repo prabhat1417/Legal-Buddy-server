@@ -1,6 +1,6 @@
 import express from 'express';
 import { connectToDatabase } from './config/DatabaseConfig.js';
-import userRouter from './routes/auth.router.js';
+import authRouter from './routes/auth.router.js';
 
 connectToDatabase();
 const port = process.env.PORT || 3000;
@@ -8,7 +8,13 @@ const app = express();
 
 app.use(express.json());
 
-app.use(userRouter);
+// home api to check if backend is live or not!
+app.get('/', (req, res) => {
+    res.send(`Hi! Current time is ${new Date().toLocaleTimeString()}`);
+});
+
+// authentication related apis
+app.use(authRouter);
 
 app.listen(port, () => {
  console.log(`Listening on port: ${port}`)
