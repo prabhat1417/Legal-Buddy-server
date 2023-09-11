@@ -23,6 +23,10 @@ const userAuthSchema=new mongoose.Schema({
         require:true,
         
     },
+    ISLAWYER:{
+        type:Boolean,
+        default:false
+    },
     MYORDERS:{
        type:[String]
 
