@@ -27,10 +27,18 @@ const userAuthSchema=new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    MYORDERS:{
-       type:[String]
-
-    }
+    MYORDERS: [
+        {
+            QUERY_ID: {
+                type: String,
+                required: true
+            },
+            LAWYER_PHONE_NUMBER: {
+                type: String,
+                required: true
+            }
+        }
+    ],
 
 })
 

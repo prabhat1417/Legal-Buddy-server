@@ -38,7 +38,7 @@ authRouter.post("/userLogin", async (req, res) => {
         res.send("You have successfully logged in.");
 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
         res.status(500).json({
             status: "error",
             message: "An error occurred while processing the request"
@@ -49,7 +49,7 @@ authRouter.post("/userLogin", async (req, res) => {
 // Route for user registration/sign-up
 authRouter.post("/userSignup", async (req, res) => {
     const { first_name, last_name, phone_number,email,password} = req.body;
-      console.log(req.body);
+    //   console.log(req.body);
     try {
         if (!first_name || !last_name || !password || !phone_number || !email) {
             return res.status(400).json({
@@ -101,7 +101,7 @@ authRouter.post("/userSignup", async (req, res) => {
         // res.redirect("/home");
 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
         res.status(500).json({
             status: "error",
             message: "An error occurred while processing the request"
@@ -164,7 +164,7 @@ authRouter.post("/lawyerSignup", async (req, res) => {
                 status: "failed",
                 message: "Account already registered. Please log in."
             });
-        }        
+        }
 
         const pastUser = await UserAuth.findOne({ PHONE_NUMBER: MOBILENUMBER });
         if(pastUser) {
@@ -201,7 +201,7 @@ authRouter.post("/lawyerSignup", async (req, res) => {
 
     } catch (error) {
         loggers.error('Lawyer signup error', { error });
-        console.error(error);
+        // console.error(error);
         res.status(500).json({
             status: "error",
             message: "An error occurred while processing the request"
@@ -260,7 +260,7 @@ authRouter.post("/lawyerLogin", async (req, res) => {
 
     } catch (error) {
         loggers.error('Lawyer login error', { error });
-        console.error(error);
+        // console.error(error);
         res.status(500).json({
             status: "error",
             message: "An error occurred while processing the request"

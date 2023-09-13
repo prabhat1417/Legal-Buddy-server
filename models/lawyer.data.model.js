@@ -9,6 +9,10 @@ const lawyerDataSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    EMAIL: {
+        type: String,
+        required: true
+    },
     SERVICE_CHARGE: {
         type: String
     },
@@ -27,9 +31,18 @@ const lawyerDataSchema = new mongoose.Schema({
     SPECIALITIES: {
         type: [String]
     },
-    BOOKED_BY: {
-        type: [String]
-    },
+    BOOKED_BY: [
+        {
+            QUERY_ID: {
+                type: String,
+                required: true
+            },
+            CUSTOMER_PHONE_NUMBER: {
+                type: String,
+                required: true
+            }
+        }
+    ],
     CASES_ASSIGNED: {
         type: Number
     },
