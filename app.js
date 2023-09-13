@@ -17,6 +17,7 @@ app.get('/', (req, res) => {
 // authentication related apis
 app.use(authRouter);
 
+
 // mixed apis
 app.use(serviceRouter);
 
