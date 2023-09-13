@@ -48,7 +48,7 @@ authRouter.post("/userLogin", async (req, res) => {
 
 // Route for user registration/sign-up
 authRouter.post("/userSignup", async (req, res) => {
-    const { first_name, last_name, password, phone_number, email } = req.body;
+    const { first_name, last_name, phone_number,email,password} = req.body;
       console.log(req.body);
     try {
         if (!first_name || !last_name || !password || !phone_number || !email) {
@@ -58,8 +58,29 @@ authRouter.post("/userSignup", async (req, res) => {
             });
         }
 
-        const checkEmail = await UserAuth.findOne({ EMAIL: email });
+        if (!/^\d{10}$/.test(phone_number)) {
+            return res.status(400).json({
+                status: "failed",
+                message: "Phone number must be exactly 10 digits"
+            });
+        }
 
+        if (password.length < 6) {
+            return res.status(400).json({
+                status: "failed",
+                message: "Password must be at least 6 characters long"
+            });
+        }
+
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+            return res.status(400).json({
+                status: "failed",
+                message: "Invalid email format"
+            });
+        }
+
+
+        const checkEmail = await UserAuth.findOne({ EMAIL: email });
         if (checkEmail) {
             return res.send("Account already registered. Please log in.");
         }
