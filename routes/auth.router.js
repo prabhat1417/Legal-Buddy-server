@@ -97,7 +97,7 @@ authRouter.post("/userSignup", async (req, res) => {
         // console.log(newUser)
 
         await newUser.save();
-        res.send("successfully signin")
+        res.send("successfully SignUp")
         // res.redirect("/home");
 
     } catch (error) {

@@ -5,7 +5,9 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "npx nodemon /app.js "
+    "start": "npx nodemon /app.js ",
+    "dev": "nodemon app",
+    "build":"npm i"
   },
   "author": "",
   "license": "ISC",
