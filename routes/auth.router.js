@@ -111,21 +111,23 @@ authRouter.post("/userSignup", async (req, res) => {
 
 // Route for Lawyer Registratin/Signup
 authRouter.post("/lawyerSignup", async (req, res) => {
-    const {
-        FIRSTNAME,
-        LASTNAME,
-        PASSWORD,
-        MOBILENUMBER,
-        EMAIL,
-        GENDER,
-        STATE,
-        CITY,
-        BAR_COUNCIL_ID,
-        ID_NUMBER,
-        YEAR
-    } = req.body;
 
     try {
+
+        const {
+            FIRSTNAME,
+            LASTNAME,
+            PASSWORD,
+            MOBILENUMBER,
+            EMAIL,
+            GENDER,
+            STATE,
+            CITY,
+            BAR_COUNCIL_ID,
+            ID_NUMBER,
+            YEAR
+        } = req.body;
+
         if (
             !FIRSTNAME ||
             !LASTNAME ||
@@ -163,6 +165,12 @@ authRouter.post("/lawyerSignup", async (req, res) => {
                 message: "Account already registered. Please log in."
             });
         }        
+
+        const pastUser = await UserAuth.findOne({ PHONE_NUMBER: MOBILENUMBER });
+        if(pastUser) {
+            pastUser.ISLAWYER = true;
+            await pastUser.save();
+        }
 
         const hashedPassword = await bcrypt.hash(PASSWORD, 10);
 
