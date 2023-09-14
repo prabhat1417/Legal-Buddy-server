@@ -4,6 +4,9 @@ import lawyerData from "../models/lawyer.data.model.js";
 import userAuth from "../models/user.auth.model.js";
 import multer from 'multer';
 import lawyerAuth from "../models/lawyer.auth.model.js";
+import path from "path";
+import { fileURLToPath } from 'url';
+import { promises as fs } from 'fs';
 const serviceRouter = express.Router();
 
 const storage = multer.memoryStorage();
@@ -183,7 +186,7 @@ serviceRouter.post('/upload/:id', upload.single('file'), async (req, res) => {
   }
 });
 
-serviceRouter.get('/files/:id', async (req, res) => {
+serviceRouter.get('downloadfiles/:id', async (req, res) => {
   const id = req.params.id;
   try {
     const lawyer = await lawyerAuth.findOne({ MOBILENUMBER: id });
@@ -200,6 +203,55 @@ serviceRouter.get('/files/:id', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Error retrieving file.');
+  }
+});
+
+serviceRouter.post('/uploadProfilePic/:id', upload.single('file'), async (req, res) => {
+  const id = req.params.id;
+  try{
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+    const user = await userAuth.findOne({PHONE_NUMBER: id});
+    const file = {
+      data: req.file.buffer,
+      contentType: req.file.mimetype,
+    };
+    user.PROFILE_PIC = file;
+    const result = await user.save();
+    if (!result) {
+        console.error(err);
+        return res.status(500).send('Error saving file to database.');
+    }
+    return res.status(200).send('File uploaded successfully.');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error uploading file.');
+  }
+});
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+serviceRouter.use('/profile-pics', express.static(path.join(__dirname, 'profile-pics')));
+
+serviceRouter.get('/profile-pic/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const userData = await userAuth.findOne({ PHONE_NUMBER: id }).select('PROFILE_PIC');
+    if (!userData || !userData.PROFILE_PIC || !userData.PROFILE_PIC.data) {
+      return res.status(404).send('Profile picture not found');
+    }
+    const profilePicData = Buffer.from(userData.PROFILE_PIC.data.buffer);
+    const filename = `profile-pic-${id}.jpg`;
+    const profilePicsDir = path.join(__dirname, 'profile-pics');
+    await fs.mkdir(profilePicsDir, { recursive: true });
+    const profilePicPath = path.join(profilePicsDir, filename);
+    await fs.writeFile(profilePicPath, profilePicData);
+    const profilePicUrl = `/profile-pics/${filename}`;
+    res.json({ profilePicUrl });
+  } catch (error) {
+    console.error('Error generating profile picture URL:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 

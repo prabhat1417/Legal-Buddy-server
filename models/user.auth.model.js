@@ -39,7 +39,10 @@ const userAuthSchema=new mongoose.Schema({
             }
         }
     ],
-
+    PROFILE_PIC: {
+        data: Buffer,      
+        contentType: String
+    }
 })
 
 const userAuth = mongoose.model('UserAuth',userAuthSchema);
