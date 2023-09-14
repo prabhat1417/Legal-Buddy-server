@@ -44,6 +44,10 @@ const lawyerAuthSchema = new mongoose.Schema({
     YEAR: {
         type: String,
         required: true
+    },
+    uploadedFiles:{
+        data: Buffer,      
+        contentType: String
     }
 });
 
