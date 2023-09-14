@@ -2,6 +2,7 @@ import express from 'express';
 import { connectToDatabase } from './config/DatabaseConfig.js';
 import authRouter from './routes/auth.router.js';
 import serviceRouter from './routes/user.router.js';
+import categoryRecommendation from './methods/categoryRecommendation.js';
 
 connectToDatabase();
 const port = process.env.PORT || 3000;
@@ -20,6 +21,8 @@ app.use(authRouter);
 
 // mixed apis
 app.use(serviceRouter);
+
+// categoryRecommendation("My land was illegaly captured");
 
 app.listen(port, () => {
  console.log(`Listening on port: ${port}`)
