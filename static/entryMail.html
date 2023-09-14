@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Poppins';
+        }
+
+        .main-container {
+            max-width: 50%;
+            height: 100%;
+            flex-direction: column;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo {
+            width: 50px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .tourna-heading {
+            text-align: center;
+            padding: 30px 0px;
+        }
+
+        .m-0 {
+            margin: 0px
+        }
+
+        .tourna-desc {
+            text-align: center;
+        }
+
+        .fs-22 {
+            font-size: 18px;
+        }
+
+        .fw-600 {
+            font-weight: 600;
+        }
+
+        .mb-1 {
+            margin-bottom: 8px;
+        }
+
+        .ardent-logo {
+            position: absolute;
+            bottom: 0%;
+            right: 2%;
+        }
+        .button-css {
+               text-align: center;
+                padding: 18px 19px;
+                border-radius: 28px;
+                font-size: 18px;
+                font-weight: 600;
+                background-color: #F44336;
+                border: 1px solid #F44336;
+            }
+    </style>
+</head>
+
+<body>
+    <main class="main-container">
+        <div style="background-color: black;">
+            <div
+                style="text-align: center;color: white;width: 100%;">
+                <h1 style="font-size: 2.5em;margin-bottom: 0px;padding: 0px 30px;">
+                    <span style="color:#f10f0f;">Legal</span><span style="margin-left: 10px;"> Buddy</span></h1>
+                <div style="margin-top: 4px;">
+                    <!-- <img class="logo" src="../../imgfolder/tick-icon.jpeg" alt="tick-mark" /> -->
+                    <h3 style="margin-top: 0px;font-size: 28px; font-weight: 600;display: inline-block;">New case registered!</h3>
+                </div>
+            </div>
+        </div>
+        <div class="tourna-heading">
+            <h3 style="font-size: 2em;" class="m-0">{{competition}}</h3>
+            <h3 style="font-size: 2em;margin-top:5px;margin-bottom:0px">{{tournacity}}</h3>
+        </div>
+        <div class="tourna-desc">
+            <div class="mb-1"><span style="font-size: 22px;" class="fs-22">Name : </span> <span style="font-size: 22px; font-weight: 600;" class="fs-22 fw-600">{{name}}</span></div>
+            <div class="mb-1"><span style="font-size: 22px;" class="fs-22"></span> <span style="font-size: 22px; font-weight: 600;" class="fs-22 fw-600">{{spot}}</span></div>
+            <div class="mb-1"><span style="font-size: 22px;" class="fs-22">Category: </span> <span style="font-size: 22px; font-weight: 600;" class="fs-22 fw-600">{{Category}}</span>
+            </div>
+            <div class="mb-1"><span style="font-size: 22px;" class="fs-22">Mobile no: </span> <span style="font-size: 22px; font-weight: 600;" class="fs-22 fw-600">{{mobile}}</span></div>
+            <div class="mb-1"><span style="font-size: 22px;" class="fs-22"></span> <span style="font-size: 22px; font-weight: 600;" class="fs-22 fw-600">{{email}}</span>
+            </div>
+            <div class="mb-1"><span style="font-size: 22px;" class="fs-22">City : </span> <span style="font-size: 22px; font-weight: 600;" class="fs-22 fw-600">{{city}}</span></div>
+            <div class="mb-1"><span style="font-size: 22px;" class="fs-22">Total Entries in Category: </span> <span style="font-size: 22px; font-weight: 600;" class="fs-22 fw-600">{{dob}}</span></div>
+            <div><span style="font-size: 22px;" class="fs-22">Entry fee paid : </span> <span style="font-size: 22px; font-weight: 600;" class="fs-22 fw-600">{{entryFee}}</span></div>
+        </div>
+        <div style="margin:20px 0px; text-align: center;">
+            <button style="font-size: 18px; font-weight: 600;" class="button-css">
+                Manage Fixture in app
+            </button>
+        </div>
+        <!-- <div class="ardent-logo">
+            <img style="height:75px" src="../../imgfolder/logo-removebg-preview-2.png" />
+        </div> -->
+        
+    </main>
+</body>
+
+</html>
