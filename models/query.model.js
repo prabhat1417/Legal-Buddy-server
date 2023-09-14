@@ -33,8 +33,11 @@ const querySchema=new mongoose.Schema({
     ISPRIVATE:{
         type:Boolean,
         default:false
+    },
+    ISSOLVED:{
+        type:Boolean,
+        default:false
     }
-
 })
 
 const query = mongoose.model('QuerySchema',querySchema);

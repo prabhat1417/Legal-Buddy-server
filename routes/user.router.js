@@ -2,9 +2,12 @@ import express from "express";
 import Query from "../models/query.model.js";
 import lawyerData from "../models/lawyer.data.model.js";
 import userAuth from "../models/user.auth.model.js";
+import multer from 'multer';
+import lawyerAuth from "../models/lawyer.auth.model.js";
 const serviceRouter = express.Router();
 
-// Route for booking service
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 serviceRouter.post("/bookLawyer", async (req, res) => {
   try {
@@ -153,6 +156,50 @@ serviceRouter.post("/saveLawyerData", async (req, res) => {
       status: "error",
       message: "An error occurred while processing the request",
     });
+  }
+});
+
+serviceRouter.post('/upload/:id', upload.single('file'), async (req, res) => {
+  const id = req.params.id;
+  try{
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+    const lawyer = await lawyerAuth.findOne({MOBILENUMBER: id});
+    const file = {
+      data: req.file.buffer,
+      contentType: req.file.mimetype,
+    };
+    lawyer.uploadedFiles = file;
+    const result = await lawyer.save()
+    if (!result) {
+        console.error(err);
+        return res.status(500).send('Error saving file to database.');
+    }
+    return res.status(200).send('File uploaded successfully.');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error uploading file.');
+  }
+});
+
+serviceRouter.get('/files/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const lawyer = await lawyerAuth.findOne({ MOBILENUMBER: id });
+    if (!lawyer) {
+      return res.status(404).send('Lawyer not found.');
+    }
+    const uploadedFile = lawyer.uploadedFiles;
+    if (!uploadedFile) {
+      return res.status(404).send('No file uploaded for this lawyer.');
+    }
+    res.setHeader('Content-Type', uploadedFile.contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="BarCertificate_${id}"`);
+    res.send(uploadedFile.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error retrieving file.');
   }
 });
 
