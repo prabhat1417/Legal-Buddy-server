@@ -1,11 +1,14 @@
 import mongoose from 'mongoose';
 
 const querySchema=new mongoose.Schema({
-    CUSTOMER_PHONE_NUMBER:{
+    ID:{
+        type:String,
+    },
+    CUSTOMER_MOBILENUMBER:{
         type:String,
         require:true,
     },
-    LAWYER_PHONE_NUMBER:{
+    LAWYER_MOBILENUMBER:{
         type:String,
         require:true,
     },
@@ -24,7 +27,6 @@ const querySchema=new mongoose.Schema({
     SERVICE_CHARGE:{
         type:Number,
         require:true,
-        length:10,
     },
     SERVICE_DESCRIPTION:{
         type:String,
