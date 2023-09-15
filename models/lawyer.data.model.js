@@ -13,6 +13,9 @@ const lawyerDataSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    MOBILENUMBER: {
+        type: String,
+    },
     SERVICE_CHARGE: {
         type: String
     },

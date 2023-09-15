@@ -23,7 +23,7 @@ app.use(authRouter);
 // mixed apis
 app.use(serviceRouter);
 
-categoryRecommendation("My land was illegaly captured");
+// categoryRecommendation("My land was illegaly captured");
 
 app.listen(port, () => {
  console.log(`Listening on port: ${port}`)
