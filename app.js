@@ -2,6 +2,7 @@ import express from 'express';
 import { connectToDatabase } from './config/DatabaseConfig.js';
 import authRouter from './routes/auth.router.js';
 import serviceRouter from './routes/user.router.js';
+import bookingRouter from './routes/booking.router.js';
 import categoryRecommendation from './methods/categoryRecommendation.js';
 import sendEmail from './routes/mailSender.router.js';
 
@@ -22,6 +23,8 @@ app.use(authRouter);
 
 // mixed apis
 app.use(serviceRouter);
+
+app.use(bookingRouter);
 
 // categoryRecommendation("My land was illegaly captured");
 

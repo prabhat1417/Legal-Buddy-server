@@ -11,13 +11,12 @@ const lawyerDataSchema = new mongoose.Schema({
     },
     EMAIL: {
         type: String,
-        required: true
     },
     MOBILENUMBER: {
         type: String,
     },
     SERVICE_CHARGE: {
-        type: String
+        type: Number
     },
     BIO: {
         type: String

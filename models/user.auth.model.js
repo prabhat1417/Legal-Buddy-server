@@ -13,8 +13,8 @@ const userAuthSchema=new mongoose.Schema({
         type:String,
         require:true
     },
-    PHONE_NUMBER:{
-        type:Number,
+    MOBILENUMBER:{
+        type:String,
         require:true,
         length:10,
     },
