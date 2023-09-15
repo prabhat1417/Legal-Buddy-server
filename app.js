@@ -3,6 +3,7 @@ import { connectToDatabase } from './config/DatabaseConfig.js';
 import authRouter from './routes/auth.router.js';
 import serviceRouter from './routes/user.router.js';
 import bookingRouter from './routes/booking.router.js';
+import FeedbackRouter from './routes/feedback.router.js'
 import categoryRecommendation from './methods/categoryRecommendation.js';
 import sendEmail from './routes/mailSender.router.js';
 
@@ -25,6 +26,8 @@ app.use(authRouter);
 app.use(serviceRouter);
 
 app.use(bookingRouter);
+
+app.use(FeedbackRouter)
 
 // categoryRecommendation("My land was illegaly captured");
 

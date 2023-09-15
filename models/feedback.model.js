@@ -1,23 +1,27 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const feedbackSchema = new mongoose.Schema({
-    LAWYER_ID: {
+    LAWYER_MOBILENUMBER: {
         type: String,
     },
-    USER_ID: {
+    CUSTOMER_MOBILENUMBER: {
         type: String,
     },
-    TIME: {
+    TIME:{
         type: String, 
     },
-    FEEDBACK: {
+    MESSAGE: {
         type: String,
     },
     RATING: {
         type: Number,
+    },
+    CUSTOMER_IMAGE: {
+        type: String,
     }
 });
 
-const feedback = mongoose.model("feedback", feedbackSchema);
-export default feedback;
 
+const FeedbackSchema=mongoose.model('Feedback',feedbackSchema);
+
+export default FeedbackSchema;
