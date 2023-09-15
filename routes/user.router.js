@@ -162,6 +162,50 @@ serviceRouter.post("/saveLawyerData", async (req, res) => {
   }
 });
 
+serviceRouter.post("/getLawyerData", async (req, res) => {
+
+  try {
+
+    const {
+      EMAIL,
+      MOBILENUMBER
+    } = req.body;
+  
+    if(!EMAIL && !MOBILENUMBER) {
+      res.status(401).json({
+        status: "Invalid request",
+        message: "Phone number or email is required",
+      });
+      return;
+    }
+    
+    // currently searching for email field, that is in postman put email id in MOBILENUMBER field
+    const lawyer = await lawyerData.findOne({ EMAIL });
+    if(!lawyer) lawyer = await lawyerData.findOne({ MOBILENUMBER });
+  
+    if(!lawyer) {
+      res.status(401).json({
+        status: "Invalid phone numer",
+        message: "Lawyer wiht this phone number or email id does not exist",
+      });
+      return;
+    }
+  
+    res.status(200).json({
+      status: "success",
+      message: "Fetched data successfully",
+      data: lawyer
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "An error occurred while processing the request",
+    });
+  }
+
+})
+
 serviceRouter.post('/upload/:id', upload.single('file'), async (req, res) => {
   const id = req.params.id;
   try{
