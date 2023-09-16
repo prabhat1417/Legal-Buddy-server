@@ -40,8 +40,7 @@ const userAuthSchema=new mongoose.Schema({
         }
     ],
     PROFILE_PIC: {
-        data: Buffer,      
-        contentType: String
+        type: String,
     }
 })
 

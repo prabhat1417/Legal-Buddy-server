@@ -1,4 +1,5 @@
 import express from "express";
+import S3 from "aws-sdk/clients/s3.js";
 import Query from "../models/query.model.js";
 import lawyerData from "../models/lawyer.data.model.js";
 import userAuth from "../models/user.auth.model.js";
@@ -9,114 +10,167 @@ import { fileURLToPath } from 'url';
 import { promises as fs } from 'fs';
 const serviceRouter = express.Router();
 
+const s3 = new S3({
+  region: process.env.region,
+  accessKeyId: process.env.accessKeyId,
+  secretAccessKey: process.env.secretAccessKey,
+});
+const uploadFile = (file) => {
+  const fileStream = fs.createReadStream(file.path);
+  const BucketParams = {
+    Bucket: process.env.Bucket,
+    Body: fileStream,
+    Key: file.filename,
+  };
+  return s3.upload(BucketParams).promise();
+};
+const getfile = (key) => {
+  const downloadParams = {
+    Key: key,
+    Bucket: process.env.Bucket,
+  };
+  return s3.getObject(downloadParams).createReadStream();
+};
+
+const uploadoptions = multer({ dest: "./imgfolder/" });
+
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter: function (req, file, cb) {
+    const allowedMimeTypes = [
+      "image/jpeg",
+      "image/png",
+      "application/pdf",
+      "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain"
+    ];    
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type. Only JPEG, PNG, PDF,DOCX,txt and PPT files are allowed."));
+    }
+  }
+});
 
-// serviceRouter.post("/bookLawyer", async (req, res) => {
-//   try {
-//     const {
-//       CUSTOMER_PHONE_NUMBER,
-//       LAWYER_PHONE_NUMBER,
-//       LAWYER_EMAIL,
-//       CREATED_ON,
-//       SERVICE_CATEGORY,
-//       SERVICE_CHARGE,
-//       SERVICE_DESCRIPTION,
-//       ISPRIVATE,
-//     } = req.body;
+serviceRouter.post("/uploadfile/:id", upload.single("file"), async (req, res) => {
+  try {
+    const lawyer = req.params.id;
+    const file = req.file;
+    if (!lawyer || !file) {
+      throw new Error("Invalid request.");
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error("File size exceeds the 5 MB limit.");
+    }
+    const params = {
+      Bucket: process.env.Bucket,
+      Body: file.buffer,
+      Key: file.originalname,
+    };
 
-//     if (
-//       !CUSTOMER_PHONE_NUMBER ||
-//       !LAWYER_PHONE_NUMBER ||
-//       !LAWYER_EMAIL ||
-//       !CREATED_ON ||
-//       !SERVICE_CATEGORY ||
-//       typeof SERVICE_CHARGE !== "number" ||
-//       !SERVICE_DESCRIPTION ||
-//       typeof ISPRIVATE !== "boolean"
-//     ) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Invalid or missing fields in the request",
-//       });
-//     }
+    const s3Result = await s3.upload(params).promise();
 
-//     const newQuery = new Query({
-//       CUSTOMER_PHONE_NUMBER,
-//       LAWYER_PHONE_NUMBER,
-//       LAWYER_EMAIL,
-//       CREATED_ON,
-//       SERVICE_CATEGORY,
-//       SERVICE_CHARGE,
-//       SERVICE_DESCRIPTION,
-//       ISPRIVATE,
-//     });
+    const File = await lawyerAuth.findOne({ MOBILENUMBER : lawyer });
+    File.uploadedFiles = s3Result.Location;
+    const updatedFile = await File.save();
+    res.status(200).send({
+      message: "File path updated successfully.",
+      updatedFilePath: File.uploadedFiles,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: error.message,
+    });
+  }
+});
 
-//     const savedQuery = await newQuery.save();
-//     // console.log("saved query: ", savedQuery);
-//     const currLawyer = await lawyerData.findOne({
-//       EMAIL: newQuery.LAWYER_EMAIL,
-//     });
+serviceRouter.get("/downloadfile/:id", async (req, res) => {
+  try {
+    const lawyer = req.params.id;
 
-//     // console.log("current lawyer: ", currLawyer);
+    const File = await lawyerAuth.findOne({ MOBILENUMBER : lawyer });
+    if (!File) {
+      throw new Error("File not found.");
+    }
+    const filePath = File.uploadedFiles;
+    res.status(200).send({
+      filePath: filePath,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: error.message,
+    });
+  }
+});
 
-//     if (!currLawyer) {
-//       return res.status(500).json({
-//         status: "error",
-//         message: "An invalid lawyer email",
-//       });
-//     }
+serviceRouter.post("/uploadProfilePic/:id", upload.single("file"), async (req, res) => {
+  try {
+    const user = req.params.id;
+    const file = req.file;
+    if (!user || !file) {
+      throw new Error("Invalid request.");
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error("File size exceeds the 5 MB limit.");
+    }
+    const File = await userAuth.findOne({ MOBILENUMBER : user });
+    const params = {
+      Bucket: process.env.Bucket,
+      Body: file.buffer,
+      Key: file.originalname,
+    };
 
-//     const newUserQuery = {
-//       QUERY_ID: savedQuery._id,
-//       CUSTOMER_PHONE_NUMBER: newQuery.CUSTOMER_PHONE_NUMBER,
-//     };
+    const s3Result = await s3.upload(params).promise();
 
-//     // console.log("new user query: ", newUserQuery);
+    
+    File.PROFILE_PIC = s3Result.Location;
+    const updatedFile = await File.save();
+    res.status(200).send({
+      message: "File path updated successfully.",
+      updatedFilePath: File.PROFILE_PIC,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: error.message,
+    });
+  }
+});
 
-//     // added new customer into lawyer data
-//     const x = currLawyer.BOOKED_BY.push(newUserQuery);
-//     await currLawyer.save();
-//     console.log("x: ", x);
+serviceRouter.get("/profilePicUrl/:id", async (req, res) => {
+  try {
+    const user = await userAuth.findOne({
+      MOBILENUMBER: req.params.id,
+    });
 
-//     // console.log("current lawyer: ", currLawyer);
-
-//     // customer who made request
-//     const currUser = await userAuth.findOne({
-//       PHONE_NUMBER: newQuery.LAWYER_PHONE_NUMBER,
-//     });
-
-//     if (!currUser) {
-//       return res.status(500).json({
-//         status: "error",
-//         message: "An invalid lawyer email",
-//       });
-//     }
-
-//     const newLawyerBooking = {
-//       QUERY_ID: savedQuery._id,
-//       LAWYER_PHONE_NUMBER: newQuery.LAWYER_PHONE_NUMBER,
-//     };
-
-//     currUser.MYORDERS.push(newLawyerBooking);
-//     await currUser.save();
-
-//     res.status(200).json({
-//       status: "success",
-//       message: "Service booked successfully",
-//     });
-//   } catch (error) {
-//     // console.error(error);
-//     res.status(500).json({
-//       status: "error",
-//       message: "An error occurred while processing the request",
-//     });
-//   }
-// });
+    if (user) {
+      if (!user.PROFILE_PIC) {
+        res.status(200).send({
+          Message: "No Image",
+        });
+      } else {
+        res.status(200).send({
+          Message: user.PROFILE_PIC,
+        });
+      }
+    }
+  } catch (error) {
+    res.status(404).send({
+      Message: "No Image",
+    });
+  }
+});
 
 serviceRouter.post("/saveLawyerData", async (req, res) => {
   try {
-    // Extract lawyer data from the request body
     const {
       FIRSTNAME,
       LASTNAME,
@@ -205,98 +259,5 @@ serviceRouter.post("/getLawyerData", async (req, res) => {
   }
 
 })
-
-serviceRouter.post('/upload/:id', upload.single('file'), async (req, res) => {
-  const id = req.params.id;
-  try{
-    if (!req.file) {
-      return res.status(400).send('No file uploaded.');
-    }
-    const lawyer = await lawyerAuth.findOne({MOBILENUMBER: id});
-    const file = {
-      data: req.file.buffer,
-      contentType: req.file.mimetype,
-    };
-    lawyer.uploadedFiles = file;
-    const result = await lawyer.save()
-    if (!result) {
-        console.error(err);
-        return res.status(500).send('Error saving file to database.');
-    }
-    return res.status(200).send('File uploaded successfully.');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error uploading file.');
-  }
-});
-
-serviceRouter.get('downloadfiles/:id', async (req, res) => {
-  const id = req.params.id;
-  try {
-    const lawyer = await lawyerAuth.findOne({ MOBILENUMBER: id });
-    if (!lawyer) {
-      return res.status(404).send('Lawyer not found.');
-    }
-    const uploadedFile = lawyer.uploadedFiles;
-    if (!uploadedFile) {
-      return res.status(404).send('No file uploaded for this lawyer.');
-    }
-    res.setHeader('Content-Type', uploadedFile.contentType);
-    res.setHeader('Content-Disposition', `attachment; filename="BarCertificate_${id}"`);
-    res.send(uploadedFile.data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error retrieving file.');
-  }
-});
-
-serviceRouter.post('/uploadProfilePic/:id', upload.single('file'), async (req, res) => {
-  const id = req.params.id;
-  try{
-    if (!req.file) {
-      return res.status(400).send('No file uploaded.');
-    }
-    const user = await userAuth.findOne({PHONE_NUMBER: id});
-    const file = {
-      data: req.file.buffer,
-      contentType: req.file.mimetype,
-    };
-    user.PROFILE_PIC = file;
-    const result = await user.save();
-    if (!result) {
-        console.error(err);
-        return res.status(500).send('Error saving file to database.');
-    }
-    return res.status(200).send('File uploaded successfully.');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error uploading file.');
-  }
-});
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-serviceRouter.use('/profile-pics', express.static(path.join(__dirname, 'profile-pics')));
-
-serviceRouter.get('/profile-pic/:id', async (req, res) => {
-  const id = req.params.id;
-  try {
-    const userData = await userAuth.findOne({ PHONE_NUMBER: id }).select('PROFILE_PIC');
-    if (!userData || !userData.PROFILE_PIC || !userData.PROFILE_PIC.data) {
-      return res.status(404).send('Profile picture not found');
-    }
-    const profilePicData = Buffer.from(userData.PROFILE_PIC.data.buffer);
-    const filename = `profile-pic-${id}.jpg`;
-    const profilePicsDir = path.join(__dirname, 'profile-pics');
-    await fs.mkdir(profilePicsDir, { recursive: true });
-    const profilePicPath = path.join(profilePicsDir, filename);
-    await fs.writeFile(profilePicPath, profilePicData);
-    const profilePicUrl = `/profile-pics/${filename}`;
-    res.json({ profilePicUrl });
-  } catch (error) {
-    console.error('Error generating profile picture URL:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
 
 export default serviceRouter;
