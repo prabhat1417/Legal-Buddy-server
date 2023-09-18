@@ -7,12 +7,12 @@ feedRouter.get("/getLawyersFeed", async (req, res) => {
   try {
     const lawyers = await lawyerData.find().lean().sort({
       EXPERIENCE: -1,
-      CASES_SOLVED: -1
+      CASES_SOLVED: -1,
     });
 
     res.status(200).json({
       status: "success",
-      message: "Query saved successfully",
+      message: "Lawyer fetched successfully",
       data: lawyers,
     });
   } catch (error) {

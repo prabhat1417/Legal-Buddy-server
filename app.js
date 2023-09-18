@@ -5,6 +5,7 @@ import serviceRouter from './routes/user.router.js';
 import bookingRouter from './routes/booking.router.js';
 import FeedbackRouter from './routes/feedback.router.js'
 import feedRouter from './routes/feed.router.js';
+import filterRouter from './routes/filter.router.js';
 import categoryRecommendation from './methods/categoryRecommendation.js';
 import sendEmail from './routes/mailSender.router.js';
 
@@ -31,6 +32,8 @@ app.use(bookingRouter);
 app.use(FeedbackRouter)
 
 app.use(feedRouter);
+
+app.use(filterRouter);
 
 // categoryRecommendation("My land was illegaly captured");
 
