@@ -7,7 +7,7 @@ import FeedbackRouter from './routes/feedback.router.js'
 import feedRouter from './routes/feed.router.js';
 import filterRouter from './routes/filter.router.js';
 import cors from 'cors'
-import categoryRecommendation from './methods/categoryRecommendation.js';
+// import categoryRecommendation from './methods/categoryRecommendation.js';
 import sendEmail from './routes/mailSender.router.js';
 
 connectToDatabase();
