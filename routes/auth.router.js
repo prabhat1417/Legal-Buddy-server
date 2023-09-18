@@ -8,9 +8,9 @@ const authRouter = express.Router();
 
 // Route for user login
 authRouter.post("/userLogin", async (req, res) => {
-  const { email, password } = req.body;
+  const { phone_number, password } = req.body;
 
-  if (!email || !password) {
+  if (!phone_number || !password) {
     return res.status(400).json({
       status: "failed",
       message: "Both email and password are required",
@@ -18,8 +18,8 @@ authRouter.post("/userLogin", async (req, res) => {
   }
 
   try {
-    const user = await UserAuth.findOne({ EMAIL: email });
-
+    const user = await UserAuth.findOne({ MOBILENUMBER:phone_number});
+    
     if (!user) {
       return res.status(404).json({
         status: "failed",
@@ -90,7 +90,7 @@ authRouter.post("/userSignup", async (req, res) => {
       FIRST_NAME: first_name,
       LAST_NAME: last_name,
       PASSWORD: hashedPassword,
-      PHONE_NUMBER: phone_number,
+      MOBILENUMBER:phone_number,
       EMAIL: email,
     });
     // console.log(newUser)
