@@ -1,5 +1,6 @@
 const categories = [
-  "Divorce and child custody",
+  "Criminal Defense",
+  "Divorce & Child Custody",
   "Property and real estate",
   "Check bounce & money recovery",
   "employment issues",
@@ -42,6 +43,8 @@ async function categoryRecommendation(userQuery) {
 
     const data = await response.json();
     console.log(data.choices[0].message.content);
+    const result = data.choices[0].message.content;
+    return result;
 
     // if (response.status === 200) {
     //   // const recommendation = response.data.result;
