@@ -10,11 +10,9 @@ feedRouter.get("/getLawyersFeed", async (req, res) => {
       CASES_SOLVED: -1,
     });
 
-    res.status(200).json({
-      status: "success",
-      message: "Lawyer fetched successfully",
-      data: lawyers,
-    });
+    res.status(200).json(
+    lawyers,
+    );
   } catch (error) {
     res.status(500).json({
       status: "error",

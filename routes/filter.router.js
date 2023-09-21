@@ -68,11 +68,9 @@ filterRouter.post("/filterLawyer", async (req, res) => {
       return matchedLanguages && matchedSpecialties && matchedLocation;
     });
 
-    res.status(200).json({
-      status: "success",
-      message: "Lawyers data filtered successfully",
-      data: matchedLawyers,
-    });
+    res.status(200).json(
+      matchedLawyers,
+    );
   } catch (error) {
     console.log(error);
     res.status(500).json({
