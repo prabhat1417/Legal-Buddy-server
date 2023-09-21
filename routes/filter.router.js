@@ -42,8 +42,10 @@ filterRouter.post("/filterLawyer", async (req, res) => {
     }
 
     const filteredLawyers = await lawyerData.find();
-
+   
     const matchedLawyers = filteredLawyers.filter((lawyer) => {
+      if(!filter.LANGUAGES && !filter.LOCATION && !filter.SPECIALITIES)
+      return filteredLawyers;
       const matchedLanguages = lawyer.LANGUAGES.some((language) =>
         LANGUAGES.includes(language)
       );
