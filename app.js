@@ -7,9 +7,10 @@ import FeedbackRouter from './routes/feedback.router.js'
 import feedRouter from './routes/feed.router.js';
 import filterRouter from './routes/filter.router.js';
 import cors from 'cors'
-import categoryRecommendation from './methods/categoryRecommendation.js';
+import {categoryRecommendation} from './methods/categoryRecommendation.js';
 import extractTextFromFile from './methods/extractTextFromFile.js';
 import sendEmail from './routes/mailSender.router.js';
+import botRouter from './routes/bot.router.js';
 
 connectToDatabase();
 const port = process.env.PORT || 3000;
@@ -52,6 +53,8 @@ app.use(filterRouter);
 //   .catch((error) => {
 //     console.error("Error:", error);
 //   });
+
+app.use(botRouter);
 
 app.listen(port, () => {
  console.log(`Listening on port: ${port}`)

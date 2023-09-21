@@ -1,6 +1,6 @@
 import express from "express";
 import lawyerData from "../models/lawyer.data.model.js";
-import categoryRecommendation from "../methods/categoryRecommendation.js";
+import {categoryRecommendation} from "../methods/categoryRecommendation.js";
 
 const filterRouter = express.Router();
 
