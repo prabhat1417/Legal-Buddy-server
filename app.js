@@ -53,6 +53,6 @@ app.use(filterRouter);
 //     console.error("Error:", error);
 //   });
 
-// app.listen(port, () => {
-//  console.log(`Listening on port: ${port}`)
-// })
+app.listen(port, () => {
+ console.log(`Listening on port: ${port}`)
+})
