@@ -8,6 +8,7 @@ import feedRouter from './routes/feed.router.js';
 import filterRouter from './routes/filter.router.js';
 import cors from 'cors'
 import categoryRecommendation from './methods/categoryRecommendation.js';
+import extractTextFromFile from './methods/extractTextFromFile.js';
 import sendEmail from './routes/mailSender.router.js';
 
 connectToDatabase();
@@ -39,6 +40,19 @@ app.use(filterRouter);
 
 // categoryRecommendation("My husband is demanding dowry");
 
-app.listen(port, () => {
- console.log(`Listening on port: ${port}`)
-})
+// const filePath = "../static/sample.pdf";
+// extractTextFromFile(filePath)
+//   .then((text) => {
+//     if (text) {
+//       console.log("Extracted Text:", text);
+//     } else {
+//       console.log("Text extraction failed.");
+//     }
+//   })
+//   .catch((error) => {
+//     console.error("Error:", error);
+//   });
+
+// app.listen(port, () => {
+//  console.log(`Listening on port: ${port}`)
+// })
