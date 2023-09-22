@@ -6,29 +6,28 @@ const filterRouter = express.Router();
 
 filterRouter.post("/filterLawyer", async (req, res) => {
   try {
-    const { LOCATION, LANGUAGES, SPECIALITIES, QUERIES } = req.body;
+    const { LOCATION, LANGUAGES, SPECIALITIES, QUERY } = req.body;
+
+    console.log(QUERY);
 
     const filter = {};
-    // if (QUERIES && QUERIES.length > 0) {
-    //   let recommendedSpecialities = await categoryRecommendation(QUERIES);
-    //   console.log(recommendedSpecialities);
-    //   // Ensure recommendedSpecialities is always an array
-    //   if (!Array.isArray(recommendedSpecialities)) {
-    //     // If it's not an array, convert it to a single-element array
-    //     recommendedSpecialities = [recommendedSpecialities];
-    //   }
+    if (QUERY && QUERY.length > 0) {
+      let recommendedSpecialities = await categoryRecommendation(QUERY);
+      console.log("hii");
+      console.log(recommendedSpecialities);
+      
 
-    //   // Push the recommended specialities into the SPECIALITIES array
-    //   if (recommendedSpecialities.length > 0) {
-    //     SPECIALITIES.push(...recommendedSpecialities);
-    //   }
-    // }
+      // Push the recommended specialities into the SPECIALITIES array
+      if (recommendedSpecialities.length > 0) {
+        SPECIALITIES.push(recommendedSpecialities);
+      }
+    }
 
-    // if (Array.isArray(SPECIALITIES) && SPECIALITIES.length > 0) {
-    //   filter.SPECIALITIES = SPECIALITIES;
-    // }
+    if (Array.isArray(SPECIALITIES) && SPECIALITIES.length > 0) {
+      filter.SPECIALITIES = SPECIALITIES;
+    }
 
-    console.log("filter parameteres: ", filter);
+    console.log("filter parameteres: ", filter.SPECIALITIES);
     if (Array.isArray(LOCATION) && LOCATION.length === 1) {
       filter.LOCATION = LOCATION[0];
     }
